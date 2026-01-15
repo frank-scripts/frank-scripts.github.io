@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FiveM Discord Login</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #36393f; color: white; }
+    button { padding: 15px 30px; font-size: 18px; background: #5865F2; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    button:hover { background: #4752C4; }
+    #user-info { margin-top: 40px; display: none; }
+    #avatar { border-radius: 50%; width: 120px; height: 120px; }
+  </style>
+</head>
+<body>
+
+  <h1>Welcome to InfiniteRP FiveM</h1>
+  <p>Login with Discord to link your account and see stats.</p>
+
+  <button id="loginBtn">Login with Discord</button>
+
+  <div id="user-info">
+    <img id="avatar" src="" alt="Avatar" />
+    <h2 id="username"></h2>
+    <p>Discord ID: <span id="id"></span></p>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script>
+    const CLIENT_ID = "1461405429543469278";
+    const REDIRECT_URI = window.location.origin + window.location.pathname;  // Auto-uses your GitHub Pages URL
+    const SCOPES = "identify";
+
+    const loginBtn = document.getElementById("loginBtn");
+    const userInfo = document.getElementById("user-info");
+
+    // Handle redirect back from Discord
+    function handleCallback() {
+      const hash = window.location.hash.substring(1);
+      const params = new URLSearchParams(hash);
+      const accessToken = params.get("access_token");
+
+      if (accessToken) {
+        // Clean the URL (remove hash)
+        history.replaceState(null, null, window.location.pathname);
+
+        fetch("https://discord.com/api/users/@me", {
+          headers: { Authorization: `Bearer ${accessToken}` }
+        })
+        .then(res => res.json())
+        .then(user => {
+          if (user.id) {
+            document.getElementById("username").textContent = user.global_name || user.username;
+            document.getElementById("id").textContent = user.id;
+            if (user.avatar) {
+              document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
+            }
+            loginBtn.style.display = "none";
+            userInfo.style.display = "block";
+
+            // Optional: Store token (expires in ~7 days)
+            localStorage.setItem("discord_token", accessToken);
+          }
+        })
+        .catch(err => console.error("Fetch error:", err));
+      }
+    }
+
+    // Login button
+    loginBtn.onclick = () => {
+      const authUrl = `https://discord.com/api/oauth2/authorize?` +
+        `client_id=${CLIENT_ID}` +
+        `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+        `&response_type=token` +
+        `&scope=${encodeURIComponent(SCOPES)}`;
+
+      window.location.href = authUrl;
+    };
+
+    function logout() {
+      localStorage.removeItem("discord_token");
+      window.location.hash = "";
+      loginBtn.style.display = "inline-block";
+      userInfo.style.display = "none";
+    }
+
+    // Check on load
+    window.onload = handleCallback;
+  </script>
+
+</body>
+</html>
