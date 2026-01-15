@@ -57,7 +57,7 @@
             opacity: 0.8;
         }
 
-        /* Navigation - same as your queue page */
+        /* Navigation */
         nav {
             position: fixed;
             top: 0;
@@ -128,23 +128,20 @@
         .hamburger.active span:nth-child(2) { opacity: 0; }
         .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
 
-        /* Main content */
-        .main-content {
-            padding-top: 5rem;
-        }
+        .main-content { padding-top: 5rem; }
 
         /* Login Section */
         .login-section {
-            padding: 6rem 0 4rem;
+            padding: 8rem 0 6rem;
             text-align: center;
         }
         .login-title {
-            font-size: 3.5rem;
+            font-size: 4rem;
             font-weight: 900;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         .login-card {
             max-width: 600px;
@@ -153,10 +150,10 @@
             backdrop-filter: blur(20px);
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            padding: 3rem;
+            padding: 3.5rem;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
-        #loginBtn, #logoutBtn {
+        #loginBtn, #logoutBtn, button.copy-btn {
             padding: 1rem 2.5rem;
             font-size: 1.2rem;
             background: var(--primary-gradient);
@@ -169,52 +166,56 @@
             box-shadow: 0 10px 30px rgba(0,204,255,0.4);
             transition: all 0.4s;
         }
-        #loginBtn:hover, #logoutBtn:hover {
+        #loginBtn:hover, #logoutBtn:hover, button.copy-btn:hover {
             transform: scale(1.05);
             box-shadow: 0 15px 40px rgba(0,204,255,0.6);
         }
         #user-info {
-            margin-top: 2rem;
+            margin-top: 2.5rem;
             display: none;
         }
         #avatar {
             border-radius: 50%;
-            width: 120px;
-            height: 120px;
-            border: 3px solid var(--primary);
-            box-shadow: 0 0 20px rgba(0,204,255,0.5);
+            width: 140px;
+            height: 140px;
+            border: 4px solid var(--primary);
+            box-shadow: 0 0 25px rgba(0,204,255,0.6);
         }
         #username {
-            font-size: 2rem;
-            margin: 1rem 0 0.5rem;
+            font-size: 2.5rem;
+            margin: 1.5rem 0 0.5rem;
         }
         #id {
             color: var(--text-muted);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
-        /* Tabs */
+        /* Tabs & Panels - hidden by default */
+        #dashboard-content {
+            display: none;
+        }
         .tabs {
             display: flex;
             justify-content: center;
-            gap: 1rem;
-            margin: 3rem 0 2rem;
+            gap: 1.5rem;
+            margin: 4rem 0 3rem;
         }
         .tab-btn {
-            padding: 1rem 2.5rem;
+            padding: 1.2rem 3rem;
             background: rgba(255,255,255,0.05);
             border: 1px solid var(--border);
             border-radius: 9999px;
             color: var(--text-muted);
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
             transition: all 0.4s;
+            font-size: 1.1rem;
         }
         .tab-btn.active, .tab-btn:hover {
             background: var(--primary-gradient);
             color: white;
             border-color: transparent;
-            box-shadow: 0 0 20px rgba(0,204,255,0.4);
+            box-shadow: 0 0 25px rgba(0,204,255,0.5);
         }
         .tab-content {
             display: none;
@@ -223,13 +224,13 @@
             display: block;
         }
 
-        /* Queue & Stats Content - reuse your styles */
+        /* Queue & Stats Content */
         .queue-header, .stats-header {
             text-align: center;
             margin-bottom: 4rem;
         }
         .queue-title, .stats-title {
-            font-size: 4rem;
+            font-size: 4.5rem;
             font-weight: 900;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
@@ -237,7 +238,7 @@
         }
         .queue-desc, .stats-desc {
             color: var(--text-muted);
-            font-size: 1.4rem;
+            font-size: 1.5rem;
             margin-top: 1rem;
         }
         .content-card {
@@ -245,27 +246,52 @@
             backdrop-filter: blur(20px);
             border-radius: var(--radius);
             border: 1px solid var(--border);
-            padding: 3rem;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            opacity: 0;
-            transform: translateY(60px);
+            padding: 3.5rem;
+            box-shadow: 0 25px 70px rgba(0,0,0,0.6);
             animation: fadeInUp 1.2s ease-out forwards;
         }
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
+        .join-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 1.2rem 3rem;
+            border-radius: 9999px;
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 800;
+            box-shadow: 0 12px 35px rgba(0,204,255,0.5);
+            transition: all 0.4s;
+            cursor: pointer;
+            font-size: 1.4rem;
             margin-top: 2rem;
         }
+        .join-button:hover {
+            transform: scale(1.08);
+            box-shadow: 0 18px 50px rgba(0,204,255,0.7);
+        }
+        .queue-message {
+            color: var(--text-muted);
+            line-height: 1.9;
+            margin-bottom: 3rem;
+            font-size: 1.2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+        }
         .stat-card {
-            background: rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.04);
             border: 1px solid var(--border);
-            border-radius: 1rem;
-            padding: 2rem;
+            border-radius: 1.5rem;
+            padding: 2.5rem;
             text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
         .stat-value {
-            font-size: 3rem;
+            font-size: 3.5rem;
             font-weight: 900;
             background: var(--primary-gradient);
             -webkit-background-clip: text;
@@ -273,16 +299,16 @@
         }
         .stat-label {
             color: var(--text-muted);
-            font-size: 1.2rem;
-            margin-top: 0.5rem;
+            font-size: 1.3rem;
+            margin-top: 1rem;
         }
 
-        /* Footer - exact copy from your queue page */
+        /* Footer - identical */
         footer {
             position: relative;
             border-top: 1px solid rgba(255,255,255,0.08);
             background: linear-gradient(to bottom, var(--bg), rgba(18,18,44,0.3));
-            margin-top: 10rem;
+            margin-top: 12rem;
         }
         footer::before {
             content: '';
@@ -459,7 +485,6 @@
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-        /* Mobile */
         @media (max-width: 767px) {
             .container { padding: 0 1.5rem; }
             .nav-inner { padding: 0 1.5rem; }
@@ -467,10 +492,11 @@
             .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: rgba(10,10,26,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 1rem 0; }
             .nav-links.active { display: flex; }
             .nav-links a { margin: 0.25rem 1.5rem; text-align: center; }
-            .queue-title, .stats-title { font-size: 3rem; }
-            .queue-desc, .stats-desc { font-size: 1.2rem; }
-            .content-card { padding: 2rem; }
-            .footer-grid { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.5rem 2rem; }
+            .login-title, .queue-title, .stats-title { font-size: 3rem; }
+            .login-card { padding: 2.5rem; }
+            .tabs { flex-direction: column; gap: 1rem; }
+            .tab-btn { width: 100%; padding: 1.2rem; }
+            .footer-grid { grid-template-columns: 1fr; gap: 3rem; }
             .footer-left { grid-column: span 1; }
             .footer-columns { grid-column: span 1; grid-template-columns: 1fr 1fr; gap: 3rem; }
             .footer-bottom-inner { flex-direction: column; gap: 1rem; text-align: center; }
@@ -512,67 +538,73 @@
     </nav>
 
     <div class="main-content">
-        <!-- Login Section -->
+        <!-- Login Section (always visible) -->
         <section class="login-section container">
-            <h1 class="login-title">Dashboard Login</h1>
+            <h1 class="login-title">Dashboard</h1>
             <div class="login-card">
-                <p style="color: var(--text-muted); margin-bottom: 2rem;">Login with Discord to access Queue & FiveM Stats</p>
+                <p style="color: var(--text-muted); margin-bottom: 2.5rem; font-size: 1.2rem;">Login with Discord to unlock Queue & FiveM Stats</p>
                 <button id="loginBtn">Login with Discord (New Tab)</button>
+
                 <div id="user-info">
                     <img id="avatar" src="" alt="Avatar">
                     <h2 id="username"></h2>
                     <p>Discord ID: <span id="id"></span></p>
-                    <button id="logoutBtn">Logout / Clear</button>
-                    <button onclick="copyId()">Copy ID</button>
+                    <button id="logoutBtn">Logout</button>
+                    <button class="copy-btn" onclick="copyId()">Copy ID</button>
                 </div>
             </div>
         </section>
 
-        <!-- Tabs -->
-        <div class="tabs container" id="tabs">
-            <button class="tab-btn active" data-tab="queue">Queue</button>
-            <button class="tab-btn" data-tab="stats">Stats</button>
-        </div>
+        <!-- Hidden dashboard content (shows after login) -->
+        <div id="dashboard-content">
+            <!-- Tabs -->
+            <div class="tabs container">
+                <button class="tab-btn active" data-tab="queue">Queue</button>
+                <button class="tab-btn" data-tab="stats">Stats</button>
+            </div>
 
-        <!-- Queue Tab Content (your original) -->
-        <div id="queue-tab" class="tab-content active container">
-            <section class="queue-header">
-                <h1 class="queue-title">Queue</h1>
-                <p class="queue-desc">Join the queue and start your adventure in Infinite Roleplay</p>
-            </section>
-            <section class="content-card">
-                <p class="queue-message">
-                    We are working on our own Queue and Whitelist System which will be linked to our website for a more secure connection process. When we do, we will open up an Allowlist Application and be giving out those to who deserve it—who have shown good roleplay and dedication to making roleplay scenes to build a great community.
-                </p>
-                <div style="text-align: center;">
-                    <div class="join-button" onclick="window.open('https://cfx.re/join/alyqgk', '_blank')">Join the Server →</div>
-                </div>
-            </section>
-        </div>
+            <!-- Queue Tab -->
+            <div id="queue-tab" class="tab-content active container">
+                <section class="queue-header">
+                    <h1 class="queue-title">Queue</h1>
+                    <p class="queue-desc">Join the queue and start your adventure in Infinite Roleplay</p>
+                </section>
+                <section class="content-card">
+                    <p class="queue-message">
+                        We are working on our own Queue and Whitelist System which will be linked to our website for a more secure connection process. When we do, we will open up an Allowlist Application and be giving out those to who deserve it—who have shown good roleplay and dedication to making roleplay scenes to build a great community.
+                    </p>
+                    <div style="text-align: center;">
+                        <div class="join-button" onclick="window.open('https://cfx.re/join/alyqgk', '_blank')">
+                            Join the Server →
+                        </div>
+                    </div>
+                </section>
+            </div>
 
-        <!-- Stats Tab Content -->
-        <div id="stats-tab" class="tab-content container">
-            <section class="stats-header">
-                <h1 class="stats-title">Your FiveM Stats</h1>
-                <p class="stats-desc">Playtime & First Join Date (linked to your Discord account)</p>
-            </section>
-            <div class="content-card">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="playtime">Loading...</div>
-                        <div class="stat-label">Total Playtime</div>
+            <!-- Stats Tab -->
+            <div id="stats-tab" class="tab-content container">
+                <section class="stats-header">
+                    <h1 class="stats-title">Your FiveM Stats</h1>
+                    <p class="stats-desc">Playtime & First Join Date (linked to your Discord account)</p>
+                </section>
+                <div class="content-card">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="playtime">Loading...</div>
+                            <div class="stat-label">Total Playtime</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="firstJoin">Loading...</div>
+                            <div class="stat-label">First Joined</div>
+                        </div>
                     </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="firstJoin">Loading...</div>
-                        <div class="stat-label">First Joined</div>
-                    </div>
+                    <p style="text-align:center; margin-top:3rem; color:var(--text-muted);">Data not showing? Ensure your Discord is linked in-game. Contact support if needed.</p>
                 </div>
-                <p style="text-align:center; margin-top:2rem; color:var(--text-muted);">No data? Make sure your Discord is linked in-game. Contact support if issues persist.</p>
             </div>
         </div>
     </div>
 
-    <!-- Footer - identical to yours -->
+    <!-- Footer -->
     <footer>
         <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sky-500/50 to-transparent"></div>
         <div class="container mx-auto px-4">
@@ -670,7 +702,7 @@
         }
         moveOrb();
 
-        // Discord Login
+        // Discord Login Logic
         const CLIENT_ID = "1461405429543469278";
         const REDIRECT_URI = window.location.origin + window.location.pathname;
         const SCOPES = "identify";
@@ -678,11 +710,12 @@
 
         const loginBtn = document.getElementById("loginBtn");
         const userInfo = document.getElementById("user-info");
+        const dashboardContent = document.getElementById("dashboard-content");
 
         function tryLoadFromStorage() {
             const token = localStorage.getItem(TOKEN_KEY);
             if (token) fetchUser(token);
-            else showLogin();
+            else showLoginOnly();
         }
 
         function fetchUser(token) {
@@ -690,7 +723,7 @@
                 headers: { Authorization: `Bearer ${token}` }
             })
             .then(res => {
-                if (!res.ok) throw new Error("Invalid token");
+                if (!res.ok) throw new Error("Invalid/expired token");
                 return res.json();
             })
             .then(user => {
@@ -702,26 +735,27 @@
                     }
                     loginBtn.style.display = "none";
                     userInfo.style.display = "block";
+                    dashboardContent.style.display = "block"; // Show tabs & panels
 
-                    // Fetch FiveM stats once logged in
                     fetchFiveMStats(user.id);
                 }
             })
             .catch(() => {
                 localStorage.removeItem(TOKEN_KEY);
-                showLogin();
+                showLoginOnly();
             });
         }
 
-        function showLogin() {
+        function showLoginOnly() {
             loginBtn.style.display = "inline-block";
             userInfo.style.display = "none";
+            dashboardContent.style.display = "none"; // Hide everything else
             document.getElementById("playtime").textContent = "Login required";
             document.getElementById("firstJoin").textContent = "Login required";
         }
 
         function fetchFiveMStats(discordId) {
-            // REPLACE THIS URL with your actual backend endpoint!
+            // CHANGE THIS TO YOUR ACTUAL BACKEND URL
             fetch(`https://yourdomain.com/stats.php?discord=${discordId}`)
                 .then(res => res.json())
                 .then(data => {
@@ -729,13 +763,13 @@
                         document.getElementById("playtime").textContent = data.playtime;
                         document.getElementById("firstJoin").textContent = data.firstJoin || "N/A";
                     } else {
-                        document.getElementById("playtime").textContent = "No data";
-                        document.getElementById("firstJoin").textContent = "No data";
+                        document.getElementById("playtime").textContent = "No data found";
+                        document.getElementById("firstJoin").textContent = "No data found";
                     }
                 })
                 .catch(() => {
-                    document.getElementById("playtime").textContent = "Error loading";
-                    document.getElementById("firstJoin").textContent = "Error loading";
+                    document.getElementById("playtime").textContent = "Error";
+                    document.getElementById("firstJoin").textContent = "Error";
                 });
         }
 
@@ -757,18 +791,17 @@
                 `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
                 `&response_type=token` +
                 `&scope=${encodeURIComponent(SCOPES)}`;
-
             window.open(authUrl, "_blank");
         };
 
         document.getElementById("logoutBtn").onclick = () => {
             localStorage.removeItem(TOKEN_KEY);
-            showLogin();
+            showLoginOnly();
         };
 
         function copyId() {
             const id = document.getElementById("id").textContent;
-            navigator.clipboard.writeText(id).then(() => alert("Discord ID copied!"));
+            navigator.clipboard.writeText(id).then(() => alert("Discord ID copied to clipboard!"));
         }
 
         // Tab switching
@@ -781,7 +814,7 @@
             });
         });
 
-        // Init
+        // Initialize
         window.onload = () => {
             tryLoadFromStorage();
             handleCallback();
