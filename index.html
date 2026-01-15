@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -6,7 +6,7 @@
   <title>InfiniteRP Discord Login</title>
   <style>
     body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #36393f; color: white; }
-    button { padding: 15px 30px; font-size: 18px; background: #5865F2; color: white; border: none; border-radius: 8px; cursor: pointer; }
+    button { padding: 15px 30px; font-size: 18px; background: #5865F2; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 10px; }
     button:hover { background: #4752C4; }
     #user-info { margin-top: 40px; display: none; }
     #avatar { border-radius: 50%; width: 120px; height: 120px; }
@@ -15,7 +15,7 @@
 <body>
 
   <h1>InfiniteRP FiveM Login</h1>
-  <p>Click below — login will open in a new tab for smoother experience.</p>
+  <p>Login persists in this browser until token expires (~7 days).</p>
 
   <button id="loginBtn">Login with Discord (New Tab)</button>
 
@@ -23,7 +23,7 @@
     <img id="avatar" src="" alt="Avatar" />
     <h2 id="username"></h2>
     <p>Discord ID: <span id="id"></span></p>
-    <button onclick="logout()">Logout</button>
+    <button onclick="logout()">Logout / Clear</button>
     <button onclick="copyId()">Copy Discord ID</button>
   </div>
 
@@ -31,37 +31,66 @@
     const CLIENT_ID = "1461405429543469278";
     const REDIRECT_URI = window.location.origin + window.location.pathname;
     const SCOPES = "identify";
+    const TOKEN_KEY = "discord_access_token";
 
     const loginBtn = document.getElementById("loginBtn");
     const userInfo = document.getElementById("user-info");
 
+    // Try to load from storage first
+    function tryLoadFromStorage() {
+      const token = localStorage.getItem(TOKEN_KEY);
+      if (token) {
+        fetchUser(token);
+      } else {
+        showLogin();
+      }
+    }
+
+    function fetchUser(token) {
+      fetch("https://discord.com/api/users/@me", {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+      .then(res => {
+        if (!res.ok) throw new Error("Invalid/expired token");
+        return res.json();
+      })
+      .then(user => {
+        if (user.id) {
+          document.getElementById("username").textContent = user.global_name || user.username;
+          document.getElementById("id").textContent = user.id;
+          if (user.avatar) {
+            document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
+          }
+          loginBtn.style.display = "none";
+          userInfo.style.display = "block";
+        }
+      })
+      .catch(() => {
+        localStorage.removeItem(TOKEN_KEY);
+        showLogin();
+      });
+    }
+
+    function showLogin() {
+      loginBtn.style.display = "inline-block";
+      userInfo.style.display = "none";
+    }
+
     function handleCallback() {
       const hash = window.location.hash.substring(1);
+      if (!hash) return;
+
       const params = new URLSearchParams(hash);
       const accessToken = params.get("access_token");
 
       if (accessToken) {
-        history.replaceState(null, null, window.location.pathname);
-
-        fetch("https://discord.com/api/users/@me", {
-          headers: { Authorization: `Bearer ${accessToken}` }
-        })
-        .then(res => res.json())
-        .then(user => {
-          if (user.id) {
-            document.getElementById("username").textContent = user.global_name || user.username;
-            document.getElementById("id").textContent = user.id;
-            if (user.avatar) {
-              document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
-            }
-            loginBtn.style.display = "none";
-            userInfo.style.display = "block";
-          }
-        })
-        .catch(err => console.error(err));
+        history.replaceState(null, null, window.location.pathname + window.location.search);
+        localStorage.setItem(TOKEN_KEY, accessToken);
+        fetchUser(accessToken);
       }
     }
 
+    // Login in new tab
     loginBtn.onclick = () => {
       const authUrl = `https://discord.com/api/oauth2/authorize?` +
         `client_id=${CLIENT_ID}` +
@@ -69,22 +98,33 @@
         `&response_type=token` +
         `&scope=${encodeURIComponent(SCOPES)}`;
 
-      window.open(authUrl, "_blank");  // ← Opens in new tab!
+      const authWindow = window.open(authUrl, "_blank");
+
+      // Optional: Poll for close + reload current page when done
+      const checkClosed = setInterval(() => {
+        if (authWindow.closed) {
+          clearInterval(checkClosed);
+          tryLoadFromStorage(); // Re-check after tab closes
+        }
+      }, 1000);
     };
 
     function logout() {
-      localStorage.removeItem("discord_token");
-      window.location.hash = "";
-      loginBtn.style.display = "inline-block";
-      userInfo.style.display = "none";
+      localStorage.removeItem(TOKEN_KEY);
+      showLogin();
     }
 
     function copyId() {
       const id = document.getElementById("id").textContent;
-      navigator.clipboard.writeText(id).then(() => alert("Discord ID copied!"));
+      navigator.clipboard.writeText(id).then(() => alert("Copied!"));
     }
 
-    window.onload = handleCallback;
+    // Run on load + listen for hash changes (backup)
+    window.onload = () => {
+      tryLoadFromStorage();
+      handleCallback();
+    };
+    window.addEventListener("hashchange", handleCallback);
   </script>
 
 </body>
