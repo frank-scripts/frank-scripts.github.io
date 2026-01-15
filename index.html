@@ -1,131 +1,792 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>InfiniteRP Discord Login</title>
-  <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; background: #36393f; color: white; }
-    button { padding: 15px 30px; font-size: 18px; background: #5865F2; color: white; border: none; border-radius: 8px; cursor: pointer; margin: 10px; }
-    button:hover { background: #4752C4; }
-    #user-info { margin-top: 40px; display: none; }
-    #avatar { border-radius: 50%; width: 120px; height: 120px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Roleplay - Dashboard</title>
+    <meta name="description" content="Infinite Roleplay Dashboard - Login, Queue & Stats">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a1a;
+            --card-bg: rgba(18, 18, 44, 0.4);
+            --text: #ffffff;
+            --text-muted: #b0b0e0;
+            --primary: #00ccff;
+            --secondary: #a259ff;
+            --primary-gradient: linear-gradient(135deg, #00ccff, #a259ff);
+            --green: #00ff88;
+            --border: rgba(255,255,255,0.08);
+            --radius: 1.5rem;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            position: relative;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #0a0a1a, #0f0a2e, #1a0a3a, #0a0f2a);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+
+        /* Bouncing Orb */
+        .orb-container {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .orb {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #a259ff 20%, rgba(162, 89, 255, 0.6) 80%);
+            box-shadow: 0 0 8px #a259ff, 0 0 16px #a259ff;
+            opacity: 0.8;
+        }
+
+        /* Navigation - same as your queue page */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(10,10,26,0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            height: 5rem;
+        }
+        .nav-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 5rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.8rem;
+            font-weight: 900;
+            cursor: pointer;
+        }
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" stroke="%2300ccff" stroke-width="8" fill="none"/><circle cx="30" cy="30" r="8" fill="%2300ccff"/><circle cx="70" cy="70" r="8" fill="%23a259ff"/><path d="M50 10 Q70 50 50 90 Q30 50 50 10" stroke="%23a259ff" stroke-width="4" fill="none"/></svg>') no-repeat center/cover;
+            animation: spin 20s linear infinite;
+        }
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            font-weight: 600;
+        }
+        .nav-links a {
+            color: var(--text-muted);
+            transition: all 0.4s;
+            text-decoration: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 9999px;
+            cursor: pointer;
+        }
+        .nav-links a:hover {
+            color: white;
+            background: rgba(0,204,255,0.2);
+        }
+        .nav-links a.active {
+            color: white;
+            background: var(--primary-gradient);
+            box-shadow: 0 0 20px rgba(0,204,255,0.5);
+        }
+        .hamburger { display: none; cursor: pointer; padding: 0.5rem; }
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 3px;
+            background: var(--text);
+            margin: 5px 0;
+            transition: 0.3s;
+            border-radius: 2px;
+        }
+        .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+        .hamburger.active span:nth-child(2) { opacity: 0; }
+        .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+        /* Main content */
+        .main-content {
+            padding-top: 5rem;
+        }
+
+        /* Login Section */
+        .login-section {
+            padding: 6rem 0 4rem;
+            text-align: center;
+        }
+        .login-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        .login-card {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        #loginBtn, #logoutBtn {
+            padding: 1rem 2.5rem;
+            font-size: 1.2rem;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-weight: 700;
+            margin: 1rem 0.5rem;
+            box-shadow: 0 10px 30px rgba(0,204,255,0.4);
+            transition: all 0.4s;
+        }
+        #loginBtn:hover, #logoutBtn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(0,204,255,0.6);
+        }
+        #user-info {
+            margin-top: 2rem;
+            display: none;
+        }
+        #avatar {
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 20px rgba(0,204,255,0.5);
+        }
+        #username {
+            font-size: 2rem;
+            margin: 1rem 0 0.5rem;
+        }
+        #id {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 3rem 0 2rem;
+        }
+        .tab-btn {
+            padding: 1rem 2.5rem;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--border);
+            border-radius: 9999px;
+            color: var(--text-muted);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.4s;
+        }
+        .tab-btn.active, .tab-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 0 20px rgba(0,204,255,0.4);
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Queue & Stats Content - reuse your styles */
+        .queue-header, .stats-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+        .queue-title, .stats-title {
+            font-size: 4rem;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .queue-desc, .stats-desc {
+            color: var(--text-muted);
+            font-size: 1.4rem;
+            margin-top: 1rem;
+        }
+        .content-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            opacity: 0;
+            transform: translateY(60px);
+            animation: fadeInUp 1.2s ease-out forwards;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Footer - exact copy from your queue page */
+        footer {
+            position: relative;
+            border-top: 1px solid rgba(255,255,255,0.08);
+            background: linear-gradient(to bottom, var(--bg), rgba(18,18,44,0.3));
+            margin-top: 10rem;
+        }
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(0,204,255,0.5), transparent);
+        }
+        footer::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 8rem;
+            background: linear-gradient(to top, rgba(18,18,44,0.2), transparent);
+            pointer-events: none;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 4rem;
+            padding: 6rem 2rem 4rem;
+        }
+        .footer-left { grid-column: span 5; }
+        .footer-columns {
+            grid-column: span 7;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4rem;
+        }
+        .footer-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+        }
+        .footer-logo-icon {
+            width: 48px; height: 48px;
+            background: var(--primary-gradient);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            box-shadow: 0 0 20px rgba(0,204,255,0.3);
+        }
+        .footer-logo-text {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .footer-logo-subtitle {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .footer-desc {
+            color: var(--text-muted);
+            max-width: 28rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+        }
+        .footer-discord-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #5865f2, #8a3ab9);
+            color: white;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(88,101,242,0.3);
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+        .footer-discord-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 30px rgba(88,101,242,0.4);
+        }
+        .footer-column h3 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+        }
+        .footer-column h3::before {
+            content: '';
+            width: 2rem;
+            height: 1px;
+            background: linear-gradient(to right, var(--primary), transparent);
+        }
+        .footer-column ul {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        .footer-column a {
+            position: relative;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            transition: color 0.4s;
+            cursor: pointer;
+        }
+        .footer-column a:hover { color: white; }
+        .footer-column a::before {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--primary);
+            transition: width 0.4s ease;
+        }
+        .footer-column a:hover::before { width: 0.5rem; }
+        .footer-play-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            transition: all 0.4s;
+            cursor: pointer;
+        }
+        .footer-play-card:hover {
+            border-color: rgba(0,204,255,0.3);
+            background: rgba(0,204,255,0.05);
+        }
+        .footer-play-icon {
+            padding: 0.5rem;
+            border-radius: 8px;
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,204,255,0.25);
+        }
+        .footer-play-text span {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text);
+            transition: color 0.4s;
+        }
+        .footer-play-card:hover .footer-play-text span { color: var(--primary); }
+        .footer-play-text p {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+        .footer-bottom {
+            border-top: 1px solid var(--border);
+            padding: 2rem 2rem 4rem;
+        }
+        .footer-bottom-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        .footer-credit a {
+            color: #ff3366;
+            transition: color 0.4s;
+            cursor: pointer;
+        }
+        .footer-credit a:hover { color: white; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* Mobile */
+        @media (max-width: 767px) {
+            .container { padding: 0 1.5rem; }
+            .nav-inner { padding: 0 1.5rem; }
+            .hamburger { display: block; }
+            .nav-links { display: none; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: rgba(10,10,26,0.95); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 1rem 0; }
+            .nav-links.active { display: flex; }
+            .nav-links a { margin: 0.25rem 1.5rem; text-align: center; }
+            .queue-title, .stats-title { font-size: 3rem; }
+            .queue-desc, .stats-desc { font-size: 1.2rem; }
+            .content-card { padding: 2rem; }
+            .footer-grid { grid-template-columns: 1fr; gap: 3rem; padding: 4rem 1.5rem 2rem; }
+            .footer-left { grid-column: span 1; }
+            .footer-columns { grid-column: span 1; grid-template-columns: 1fr 1fr; gap: 3rem; }
+            .footer-bottom-inner { flex-direction: column; gap: 1rem; text-align: center; }
+        }
+
+        @media (max-width: 480px) {
+            .footer-columns { grid-template-columns: 1fr; }
+        }
+    </style>
 </head>
 <body>
+    <div class="orb-container">
+        <div class="orb" id="bouncer"></div>
+    </div>
 
-  <h1>InfiniteRP FiveM Login</h1>
-  <p>Login persists in this browser until token expires (~7 days).</p>
+    <nav>
+        <div class="nav-inner">
+            <div class="logo" onclick="window.open('https://www.infiniterpv2.net/home', '_blank')">
+                <div class="logo-icon"></div>
+                Infinite Roleplay
+            </div>
 
-  <button id="loginBtn">Login with Discord (New Tab)</button>
+            <div class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
 
-  <div id="user-info">
-    <img id="avatar" src="" alt="Avatar" />
-    <h2 id="username"></h2>
-    <p>Discord ID: <span id="id"></span></p>
-    <button onclick="logout()">Logout / Clear</button>
-    <button onclick="copyId()">Copy Discord ID</button>
-  </div>
+            <div class="nav-links" id="navLinks">
+                <a onclick="window.open('https://www.infiniterpv2.net/home', '_blank')">Home</a>
+                <a onclick="window.open('https://www.infiniterpv2.net/rules', '_blank')">Rules</a>
+                <a onclick="window.open('https://www.infiniterpv2.net/guides', '_blank')">Guides</a>
+                <a onclick="window.open('https://www.infiniterpv2.net/roadmap', '_blank')">Roadmap</a>
+                <a onclick="window.open('https://www.infiniterpv2.net/faq', '_blank')">FAQ</a>
+                <a onclick="window.open('https://www.infiniterpv2.net/applications', '_blank')">Applications</a>
+                <a onclick="window.open('https://www.infiniterpv2.net/queue', '_blank')">Queue</a>
+            </div>
+        </div>
+    </nav>
 
-  <script>
-    const CLIENT_ID = "1461405429543469278";
-    const REDIRECT_URI = window.location.origin + window.location.pathname;
-    const SCOPES = "identify";
-    const TOKEN_KEY = "discord_access_token";
+    <div class="main-content">
+        <!-- Login Section -->
+        <section class="login-section container">
+            <h1 class="login-title">Dashboard Login</h1>
+            <div class="login-card">
+                <p style="color: var(--text-muted); margin-bottom: 2rem;">Login with Discord to access Queue & FiveM Stats</p>
+                <button id="loginBtn">Login with Discord (New Tab)</button>
+                <div id="user-info">
+                    <img id="avatar" src="" alt="Avatar">
+                    <h2 id="username"></h2>
+                    <p>Discord ID: <span id="id"></span></p>
+                    <button id="logoutBtn">Logout / Clear</button>
+                    <button onclick="copyId()">Copy ID</button>
+                </div>
+            </div>
+        </section>
 
-    const loginBtn = document.getElementById("loginBtn");
-    const userInfo = document.getElementById("user-info");
+        <!-- Tabs -->
+        <div class="tabs container" id="tabs">
+            <button class="tab-btn active" data-tab="queue">Queue</button>
+            <button class="tab-btn" data-tab="stats">Stats</button>
+        </div>
 
-    // Try to load from storage first
-    function tryLoadFromStorage() {
-      const token = localStorage.getItem(TOKEN_KEY);
-      if (token) {
-        fetchUser(token);
-      } else {
-        showLogin();
-      }
-    }
+        <!-- Queue Tab Content (your original) -->
+        <div id="queue-tab" class="tab-content active container">
+            <section class="queue-header">
+                <h1 class="queue-title">Queue</h1>
+                <p class="queue-desc">Join the queue and start your adventure in Infinite Roleplay</p>
+            </section>
+            <section class="content-card">
+                <p class="queue-message">
+                    We are working on our own Queue and Whitelist System which will be linked to our website for a more secure connection process. When we do, we will open up an Allowlist Application and be giving out those to who deserve it—who have shown good roleplay and dedication to making roleplay scenes to build a great community.
+                </p>
+                <div style="text-align: center;">
+                    <div class="join-button" onclick="window.open('https://cfx.re/join/alyqgk', '_blank')">Join the Server →</div>
+                </div>
+            </section>
+        </div>
 
-    function fetchUser(token) {
-      fetch("https://discord.com/api/users/@me", {
-        headers: { Authorization: `Bearer ${token}` }
-      })
-      .then(res => {
-        if (!res.ok) throw new Error("Invalid/expired token");
-        return res.json();
-      })
-      .then(user => {
-        if (user.id) {
-          document.getElementById("username").textContent = user.global_name || user.username;
-          document.getElementById("id").textContent = user.id;
-          if (user.avatar) {
-            document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
-          }
-          loginBtn.style.display = "none";
-          userInfo.style.display = "block";
+        <!-- Stats Tab Content -->
+        <div id="stats-tab" class="tab-content container">
+            <section class="stats-header">
+                <h1 class="stats-title">Your FiveM Stats</h1>
+                <p class="stats-desc">Playtime & First Join Date (linked to your Discord account)</p>
+            </section>
+            <div class="content-card">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="playtime">Loading...</div>
+                        <div class="stat-label">Total Playtime</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="firstJoin">Loading...</div>
+                        <div class="stat-label">First Joined</div>
+                    </div>
+                </div>
+                <p style="text-align:center; margin-top:2rem; color:var(--text-muted);">No data? Make sure your Discord is linked in-game. Contact support if issues persist.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer - identical to yours -->
+    <footer>
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sky-500/50 to-transparent"></div>
+        <div class="container mx-auto px-4">
+            <div class="py-12 sm:py-16">
+                <div class="footer-grid">
+                    <div class="footer-left">
+                        <div class="footer-logo group" onclick="window.open('https://www.infiniterpv2.net/home', '_blank')">
+                            <div class="footer-logo-icon">∞</div>
+                            <div>
+                                <div class="footer-logo-text">Infinite</div>
+                                <div class="footer-logo-subtitle">Roleplay Server</div>
+                            </div>
+                        </div>
+                        <p class="footer-desc">Experience the ultimate FiveM roleplay adventure. Join our thriving community and create unforgettable stories.</p>
+                        <div class="footer-discord-btn" onclick="window.open('https://discord.gg/2y79JN2QXn', '_blank')">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.452 18.452 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.33 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"/></svg>
+                            Join Discord
+                        </div>
+                    </div>
+                    <div class="footer-columns">
+                        <div class="footer-column">
+                            <h3>Resources</h3>
+                            <ul>
+                                <li><a onclick="window.open('https://www.infiniterpv2.net/rules', '_blank')">Server Rules</a></li>
+                                <li><a onclick="window.open('https://www.infiniterpv2.net/faq', '_blank')">FAQ</a></li>
+                                <li><a onclick="window.open('https://www.infiniterpv2.net/guides', '_blank')">Guides</a></li>
+                                <li><a onclick="window.open('https://discord.gg/2y79JN2QXn', '_blank')">Support</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h3>Legal</h3>
+                            <ul>
+                                <li><a onclick="window.open('https://www.infiniterpv2.net/privacy', '_blank')">Privacy Policy</a></li>
+                                <li><a onclick="window.open('https://www.infiniterpv2.net/terms', '_blank')">Terms of Service</a></li>
+                                <li><a onclick="window.open('https://www.infiniterpv2.net/refund', '_blank')">Refund Policy</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-column">
+                            <h3>Play Now</h3>
+                            <div class="footer-play-card" onclick="window.open('https://cfx.re/join/alyqgk', '_blank')">
+                                <div class="footer-play-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"></path><path d="M12 3v18"></path></svg>
+                                </div>
+                                <div class="footer-play-text">
+                                    <span>Start Playing</span>
+                                    <p>Join the server</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-bottom-inner container mx-auto px-4">
+                    <div>© 2026 Infinite Roleplay. All rights reserved.</div>
+                    <div class="footer-credit">
+                        Built with ❤️ by <a onclick="window.open('https://sites.google.com/view/frankscripts/home', '_blank')">Frank Scripts</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[rgba(18,18,44,0.2)] to-transparent pointer-events-none"></div>
+    </footer>
+
+    <script>
+        // Hamburger menu
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth < 768) {
+                    hamburger.classList.remove('active');
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+
+        // Bouncing orb
+        const orb = document.getElementById('bouncer');
+        let x = 50, y = 50, dx = 1.2, dy = 0.9, size = 20;
+        function moveOrb() {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            x += dx;
+            y += dy;
+            if (x + size >= width || x <= 0) dx = -dx;
+            if (y + size >= height || y <= 0) dy = -dy;
+            orb.style.left = x + 'px';
+            orb.style.top = y + 'px';
+            requestAnimationFrame(moveOrb);
         }
-      })
-      .catch(() => {
-        localStorage.removeItem(TOKEN_KEY);
-        showLogin();
-      });
-    }
+        moveOrb();
 
-    function showLogin() {
-      loginBtn.style.display = "inline-block";
-      userInfo.style.display = "none";
-    }
+        // Discord Login
+        const CLIENT_ID = "1461405429543469278";
+        const REDIRECT_URI = window.location.origin + window.location.pathname;
+        const SCOPES = "identify";
+        const TOKEN_KEY = "discord_access_token";
 
-    function handleCallback() {
-      const hash = window.location.hash.substring(1);
-      if (!hash) return;
+        const loginBtn = document.getElementById("loginBtn");
+        const userInfo = document.getElementById("user-info");
 
-      const params = new URLSearchParams(hash);
-      const accessToken = params.get("access_token");
-
-      if (accessToken) {
-        history.replaceState(null, null, window.location.pathname + window.location.search);
-        localStorage.setItem(TOKEN_KEY, accessToken);
-        fetchUser(accessToken);
-      }
-    }
-
-    // Login in new tab
-    loginBtn.onclick = () => {
-      const authUrl = `https://discord.com/api/oauth2/authorize?` +
-        `client_id=${CLIENT_ID}` +
-        `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-        `&response_type=token` +
-        `&scope=${encodeURIComponent(SCOPES)}`;
-
-      const authWindow = window.open(authUrl, "_blank");
-
-      // Optional: Poll for close + reload current page when done
-      const checkClosed = setInterval(() => {
-        if (authWindow.closed) {
-          clearInterval(checkClosed);
-          tryLoadFromStorage(); // Re-check after tab closes
+        function tryLoadFromStorage() {
+            const token = localStorage.getItem(TOKEN_KEY);
+            if (token) fetchUser(token);
+            else showLogin();
         }
-      }, 1000);
-    };
 
-    function logout() {
-      localStorage.removeItem(TOKEN_KEY);
-      showLogin();
-    }
+        function fetchUser(token) {
+            fetch("https://discord.com/api/users/@me", {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            .then(res => {
+                if (!res.ok) throw new Error("Invalid token");
+                return res.json();
+            })
+            .then(user => {
+                if (user.id) {
+                    document.getElementById("username").textContent = user.global_name || user.username;
+                    document.getElementById("id").textContent = user.id;
+                    if (user.avatar) {
+                        document.getElementById("avatar").src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=128`;
+                    }
+                    loginBtn.style.display = "none";
+                    userInfo.style.display = "block";
 
-    function copyId() {
-      const id = document.getElementById("id").textContent;
-      navigator.clipboard.writeText(id).then(() => alert("Copied!"));
-    }
+                    // Fetch FiveM stats once logged in
+                    fetchFiveMStats(user.id);
+                }
+            })
+            .catch(() => {
+                localStorage.removeItem(TOKEN_KEY);
+                showLogin();
+            });
+        }
 
-    // Run on load + listen for hash changes (backup)
-    window.onload = () => {
-      tryLoadFromStorage();
-      handleCallback();
-    };
-    window.addEventListener("hashchange", handleCallback);
-  </script>
+        function showLogin() {
+            loginBtn.style.display = "inline-block";
+            userInfo.style.display = "none";
+            document.getElementById("playtime").textContent = "Login required";
+            document.getElementById("firstJoin").textContent = "Login required";
+        }
 
+        function fetchFiveMStats(discordId) {
+            // REPLACE THIS URL with your actual backend endpoint!
+            fetch(`https://yourdomain.com/stats.php?discord=${discordId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.playtime) {
+                        document.getElementById("playtime").textContent = data.playtime;
+                        document.getElementById("firstJoin").textContent = data.firstJoin || "N/A";
+                    } else {
+                        document.getElementById("playtime").textContent = "No data";
+                        document.getElementById("firstJoin").textContent = "No data";
+                    }
+                })
+                .catch(() => {
+                    document.getElementById("playtime").textContent = "Error loading";
+                    document.getElementById("firstJoin").textContent = "Error loading";
+                });
+        }
+
+        function handleCallback() {
+            const hash = window.location.hash.substring(1);
+            if (!hash) return;
+            const params = new URLSearchParams(hash);
+            const accessToken = params.get("access_token");
+            if (accessToken) {
+                history.replaceState(null, null, window.location.pathname + window.location.search);
+                localStorage.setItem(TOKEN_KEY, accessToken);
+                fetchUser(accessToken);
+            }
+        }
+
+        loginBtn.onclick = () => {
+            const authUrl = `https://discord.com/api/oauth2/authorize?` +
+                `client_id=${CLIENT_ID}` +
+                `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+                `&response_type=token` +
+                `&scope=${encodeURIComponent(SCOPES)}`;
+
+            window.open(authUrl, "_blank");
+        };
+
+        document.getElementById("logoutBtn").onclick = () => {
+            localStorage.removeItem(TOKEN_KEY);
+            showLogin();
+        };
+
+        function copyId() {
+            const id = document.getElementById("id").textContent;
+            navigator.clipboard.writeText(id).then(() => alert("Discord ID copied!"));
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.tab + '-tab').classList.add('active');
+            });
+        });
+
+        // Init
+        window.onload = () => {
+            tryLoadFromStorage();
+            handleCallback();
+        };
+        window.addEventListener("hashchange", handleCallback);
+    </script>
 </body>
 </html>
