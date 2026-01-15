@@ -38,6 +38,7 @@
             100% { background-position: 0% 50%; }
         }
         .container { max-width: 1400px; margin: 0 auto; padding: 0 2rem; }
+
         /* Bouncing Orb */
         .orb-container {
             position: fixed;
@@ -55,6 +56,7 @@
             box-shadow: 0 0 8px #a259ff, 0 0 16px #a259ff;
             opacity: 0.8;
         }
+
         /* Navigation */
         nav {
             position: fixed;
@@ -125,7 +127,9 @@
         .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
         .hamburger.active span:nth-child(2) { opacity: 0; }
         .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
         .main-content { padding-top: 5rem; }
+
         /* Login Section */
         .login-section {
             padding: 8rem 0 6rem;
@@ -185,6 +189,7 @@
             color: var(--text-muted);
             font-size: 1.3rem;
         }
+
         /* Tabs & Panels - hidden by default */
         #dashboard-content {
             display: none;
@@ -218,6 +223,7 @@
         .tab-content.active {
             display: block;
         }
+
         /* Queue & Stats Content */
         .queue-header, .stats-header {
             text-align: center;
@@ -269,6 +275,7 @@
             margin-bottom: 3rem;
             font-size: 1.2rem;
         }
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -295,7 +302,8 @@
             font-size: 1.3rem;
             margin-top: 1rem;
         }
-        /* Footer */
+
+        /* Footer - identical */
         footer {
             position: relative;
             border-top: 1px solid rgba(255,255,255,0.08);
@@ -473,8 +481,10 @@
             cursor: pointer;
         }
         .footer-credit a:hover { color: white; }
+
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(60px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
         @media (max-width: 767px) {
             .container { padding: 0 1.5rem; }
             .nav-inner { padding: 0 1.5rem; }
@@ -491,6 +501,7 @@
             .footer-columns { grid-column: span 1; grid-template-columns: 1fr 1fr; gap: 3rem; }
             .footer-bottom-inner { flex-direction: column; gap: 1rem; text-align: center; }
         }
+
         @media (max-width: 480px) {
             .footer-columns { grid-template-columns: 1fr; }
         }
@@ -500,17 +511,20 @@
     <div class="orb-container">
         <div class="orb" id="bouncer"></div>
     </div>
+
     <nav>
         <div class="nav-inner">
             <div class="logo" onclick="window.open('https://www.infiniterpv2.net/home', '_blank')">
                 <div class="logo-icon"></div>
                 Infinite Roleplay
             </div>
+
             <div class="hamburger" id="hamburger">
                 <span></span>
                 <span></span>
                 <span></span>
             </div>
+
             <div class="nav-links" id="navLinks">
                 <a onclick="window.open('https://www.infiniterpv2.net/home', '_blank')">Home</a>
                 <a onclick="window.open('https://www.infiniterpv2.net/rules', '_blank')">Rules</a>
@@ -522,6 +536,7 @@
             </div>
         </div>
     </nav>
+
     <div class="main-content">
         <!-- Login Section (always visible) -->
         <section class="login-section container">
@@ -529,6 +544,7 @@
             <div class="login-card">
                 <p style="color: var(--text-muted); margin-bottom: 2.5rem; font-size: 1.2rem;">Login with Discord to unlock Queue & FiveM Stats</p>
                 <button id="loginBtn">Login with Discord (New Tab)</button>
+
                 <div id="user-info">
                     <img id="avatar" src="" alt="Avatar">
                     <h2 id="username"></h2>
@@ -538,6 +554,7 @@
                 </div>
             </div>
         </section>
+
         <!-- Hidden dashboard content (shows after login) -->
         <div id="dashboard-content">
             <!-- Tabs -->
@@ -545,6 +562,7 @@
                 <button class="tab-btn active" data-tab="queue">Queue</button>
                 <button class="tab-btn" data-tab="stats">Stats</button>
             </div>
+
             <!-- Queue Tab -->
             <div id="queue-tab" class="tab-content active container">
                 <section class="queue-header">
@@ -562,6 +580,7 @@
                     </div>
                 </section>
             </div>
+
             <!-- Stats Tab -->
             <div id="stats-tab" class="tab-content container">
                 <section class="stats-header">
@@ -584,6 +603,7 @@
             </div>
         </div>
     </div>
+
     <!-- Footer -->
     <footer>
         <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-sky-500/50 to-transparent"></div>
@@ -648,6 +668,7 @@
         </div>
         <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[rgba(18,18,44,0.2)] to-transparent pointer-events-none"></div>
     </footer>
+
     <script>
         // Hamburger menu
         const hamburger = document.getElementById('hamburger');
@@ -686,7 +707,6 @@
         const REDIRECT_URI = window.location.origin + window.location.pathname;
         const SCOPES = "identify";
         const TOKEN_KEY = "discord_access_token";
-        const QUEUE_URL = "https://www.infiniterpv2.net/queue";
 
         const loginBtn = document.getElementById("loginBtn");
         const userInfo = document.getElementById("user-info");
@@ -715,12 +735,9 @@
                     }
                     loginBtn.style.display = "none";
                     userInfo.style.display = "block";
-                    dashboardContent.style.display = "block";
+                    dashboardContent.style.display = "block"; // Show tabs & panels
 
                     fetchFiveMStats(user.id);
-
-                    // AUTO-REDIRECT TO QUEUE WITH TOKEN AFTER SUCCESSFUL LOGIN
-                    window.location.href = QUEUE_URL + "?access_token=" + token;
                 }
             })
             .catch(() => {
@@ -732,7 +749,7 @@
         function showLoginOnly() {
             loginBtn.style.display = "inline-block";
             userInfo.style.display = "none";
-            dashboardContent.style.display = "none";
+            dashboardContent.style.display = "none"; // Hide everything else
             document.getElementById("playtime").textContent = "Login required";
             document.getElementById("firstJoin").textContent = "Login required";
         }
